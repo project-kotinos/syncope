@@ -1,0 +1,20 @@
+dependencies:
+  build:
+   - maven:3.6.3
+   - java:11.0.8
+   
+build_targets:
+  - name: default
+    container:
+      image: yourbase/yb_ubuntu:18.04
+    environment:
+      - DBMS=H2
+      - jaxrsContentType=application/jso
+    commands:
+      - mvn -U --quiet -T 1C -P skipTests,all
+      - mvn -T 1C checkstyle:check ianal:verify-legal-files modernizer:modernizer apache-rat:check
+      - mvn -U -T 1C clean test -Dinvoker.streamLogs=true -Dmodernizer.skip=true -Dianal.skip=true -Drat.skip=true
+ci:
+  builds:
+    - name: default
+      build_target: default
